@@ -7,7 +7,7 @@ class RelieVRApp {
     this.postAssessmentData = {}
     this.sessionStartTime = null
     this.sessionTimer = null
-    this.vrVideos = []
+    this.vrVideo = {}
     this.currentVideoIndex = 0
     this.totalVideoDuration = 0
     this.vrProgressInterval = null
@@ -421,41 +421,36 @@ class RelieVRApp {
     const anxietyLevel = Number.parseInt(this.preAssessmentData.pre_anxiety_emoji) || 3
 
     let recommendation = ""
-    let video1Src = ""
-    let video2Src = ""
+    let videoSrc = ""
 
     if (stressLevel <= 2 && anxietyLevel <= 2) {
       recommendation = `
                 <h3><i class="fas fa-leaf"></i> Calming Nature Experience</h3>
-                <p>Based on your high stress and anxiety levels, we recommend peaceful 360° nature experiences to help you relax and find inner calm.</p>
+                <p>Based on your high stress and anxiety levels, we recommend a peaceful 360° nature experience to help you relax and find inner calm.</p>
             `
-      video1Src = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-      video2Src = "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4"
+      videoSrc = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
     } else if (painLevel >= 7) {
       recommendation = `
                 <h3><i class="fas fa-spa"></i> Pain Management Therapy</h3>
-                <p>We've selected specialized 360° VR experiences designed to help manage pain through guided meditation and visualization techniques.</p>
+                <p>We've selected a specialized 360° VR experience designed to help manage pain through guided meditation and visualization techniques.</p>
             `
-      video1Src = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
-      video2Src = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
+      videoSrc = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
     } else {
       recommendation = `
                 <h3><i class="fas fa-heart"></i> Positive Healing Journey</h3>
-                <p>Your assessment shows you're on a good path. These uplifting 360° VR experiences will boost your mood and accelerate your healing process.</p>
+                <p>Your assessment shows you're on a good path. This uplifting 360° VR experience will boost your mood and accelerate your healing process.</p>
             `
-      video1Src = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4"
-      video2Src = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4"
+      videoSrc = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
     }
 
     container.innerHTML = recommendation
 
-    this.vrVideos = [
-      { src: video1Src, duration: 60 }, // 1 minute each for demo purposes
-      { src: video2Src, duration: 60 },
-    ]
+    this.vrVideo = {
+      src: videoSrc,
+      duration: 596, // BigBuckBunny actual duration in seconds
+    }
 
-    document.getElementById("vrVideo1").src = video1Src
-    document.getElementById("vrVideo2").src = video2Src
+    document.getElementById("vrVideo1").src = videoSrc
   }
 
   startVRSession() {
@@ -480,8 +475,7 @@ class RelieVRApp {
         this.startSessionTimer()
 
         setTimeout(() => {
-          this.currentVideoIndex = 0
-          this.playVRVideoSequence()
+          this.playVRVideo()
         }, 100)
       })
       .catch((e) => {
@@ -490,93 +484,40 @@ class RelieVRApp {
         this.startSessionTimer()
 
         setTimeout(() => {
-          this.currentVideoIndex = 0
-          this.playVRVideoSequence()
+          this.playVRVideo()
         }, 100)
       })
   }
 
-  playVRVideoSequence() {
-    const video1 = document.getElementById("vrVideo1")
+  playVRVideo() {
+    const video = document.getElementById("vrVideo1")
     const video2 = document.getElementById("vrVideo2")
     const currentVideoInfo = document.getElementById("currentVideoInfo")
     const progressText = document.getElementById("vrProgressText")
 
-    console.log("[v0] Starting 360° VR video sequence")
+    console.log("[v0] Starting 360° VR therapeutic video")
 
-    if (this.currentVideoIndex === 0) {
-      currentVideoInfo.textContent = "Playing 360° Therapeutic Video 1 of 2"
-      progressText.textContent = "Immersive 360° healing experience in progress..."
+    currentVideoInfo.textContent = "Playing 360° Therapeutic Experience"
+    progressText.textContent = "Immersive 360° healing experience in progress..."
 
-      video1.style.display = "block"
-      video2.style.display = "none"
+    video.style.display = "block"
+    video2.style.display = "none"
 
-      video1.load()
-      video1.muted = false // Ensure audio is enabled
-      video1.volume = 0.7
+    video.load()
+    video.muted = false
+    video.volume = 0.7
 
-      const playPromise = video1.play()
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => {
-            console.log("[v0] First 360° video started playing successfully")
-            this.updateVRProgress(0, this.vrVideos[0].duration)
-          })
-          .catch((e) => {
-            console.log("[v0] First video autoplay failed:", e)
-            video1.muted = true
-            video1.play().catch(() => {
-              setTimeout(() => {
-                this.currentVideoIndex = 1
-                this.playSecondVideo()
-              }, 2000)
-            })
-          })
-      }
-
-      video1.onended = () => {
-        console.log("[v0] First 360° video completed, transitioning to second video")
-        this.currentVideoIndex = 1
-        this.playSecondVideo()
-      }
-
-      setTimeout(() => {
-        if (this.currentVideoIndex === 0) {
-          console.log("[v0] Auto-advancing to second 360° video")
-          this.currentVideoIndex = 1
-          this.playSecondVideo()
-        }
-      }, this.vrVideos[0].duration * 1000)
-    }
-  }
-
-  playSecondVideo() {
-    const video1 = document.getElementById("vrVideo1")
-    const video2 = document.getElementById("vrVideo2")
-    const currentVideoInfo = document.getElementById("currentVideoInfo")
-    const progressText = document.getElementById("vrProgressText")
-
-    currentVideoInfo.textContent = "Playing 360° Therapeutic Video 2 of 2"
-    progressText.textContent = "Final immersive 360° healing session..."
-
-    video1.style.display = "none"
-    video2.style.display = "block"
-
-    video2.load()
-    video2.muted = false
-    video2.volume = 0.7
-
-    const playPromise = video2.play()
+    const playPromise = video.play()
     if (playPromise !== undefined) {
       playPromise
         .then(() => {
-          console.log("[v0] Second 360° video started playing successfully")
-          this.updateVRProgress(this.vrVideos[0].duration, this.vrVideos[1].duration)
+          console.log("[v0] 360° video started playing successfully")
+          this.updateVRProgress()
         })
         .catch((e) => {
-          console.log("[v0] Second video autoplay failed:", e)
-          video2.muted = true
-          video2.play().catch(() => {
+          console.log("[v0] Video autoplay failed:", e)
+          video.muted = true
+          video.play().catch(() => {
             setTimeout(() => {
               this.completeVRSession()
             }, 2000)
@@ -584,33 +525,27 @@ class RelieVRApp {
         })
     }
 
-    video2.onended = () => {
-      console.log("[v0] Second 360° video completed, finishing VR session")
+    video.onended = () => {
+      console.log("[v0] 360° video completed naturally")
       setTimeout(() => {
         this.completeVRSession()
       }, 1000)
     }
-
-    setTimeout(() => {
-      if (this.currentVideoIndex === 1) {
-        console.log("[v0] Auto-completing 360° VR session")
-        this.completeVRSession()
-      }
-    }, this.vrVideos[1].duration * 1000)
   }
 
-  updateVRProgress(startTime, duration) {
+  updateVRProgress() {
     const progressFill = document.getElementById("vrProgressFill")
-    const totalDuration = this.vrVideos[0].duration + this.vrVideos[1].duration
+    const video = document.getElementById("vrVideo1")
 
     this.vrProgressInterval = setInterval(() => {
-      const currentVideo =
-        this.currentVideoIndex === 0 ? document.getElementById("vrVideo1") : document.getElementById("vrVideo2")
-
-      if (currentVideo && !currentVideo.paused) {
-        const elapsed = startTime + currentVideo.currentTime
-        const progress = (elapsed / totalDuration) * 100
+      if (video && !video.paused && video.duration) {
+        const progress = (video.currentTime / video.duration) * 100
         progressFill.style.width = `${Math.min(progress, 100)}%`
+
+        // Auto-complete when video ends
+        if (video.currentTime >= video.duration - 1) {
+          this.completeVRSession()
+        }
       }
     }, 1000)
   }
@@ -621,7 +556,10 @@ class RelieVRApp {
     }
 
     const progressText = document.getElementById("vrProgressText")
+    const progressFill = document.getElementById("vrProgressFill")
+
     progressText.textContent = "VR therapy session completed!"
+    progressFill.style.width = "100%"
 
     setTimeout(() => {
       this.exitVRSession()
