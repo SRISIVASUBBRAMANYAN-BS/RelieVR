@@ -64,7 +64,6 @@ class RelivrApp {
       patientAge: Number.parseInt(document.getElementById("patientAge").value),
       patientGender: document.getElementById("patientGender").value,
       operationType: document.getElementById("operationType").value,
-      operationDate: document.getElementById("operationDate").value,
       bloodPressure: document.getElementById("bloodPressure").value,
     }
 
@@ -430,58 +429,74 @@ class RelivrApp {
                 <h3><i class="fas fa-leaf"></i> Calming Nature Experience</h3>
                 <p>Based on your high stress and anxiety levels, we recommend peaceful nature experiences to help you relax and find inner calm.</p>
             `
-      video1Src =
-        "/placeholder.mp4?height=1080&width=1920&query=peaceful forest nature VR experience with birds chirping"
-      video2Src = "/placeholder.mp4?height=1080&width=1920&query=serene ocean waves VR meditation experience"
+      video1Src = "https://youtu.be/eKumVFvGHFA?si=OdfvW47hP1hcEWKk"
+      video2Src = "https://youtu.be/WsMjBMxpUTc?si=5lENa2fdnTlWPj5T"
     } else if (painLevel >= 7) {
       recommendation = `
                 <h3><i class="fas fa-spa"></i> Pain Management Therapy</h3>
                 <p>We've selected specialized VR experiences designed to help manage pain through guided meditation and visualization techniques.</p>
             `
-      video1Src = "/placeholder.mp4?height=1080&width=1920&query=VR pain management meditation with breathing exercises"
-      video2Src = "/placeholder.mp4?height=1080&width=1920&query=healing visualization VR therapy for pain relief"
+      video1Src = "https://youtu.be/WsMjBMxpUTc?si=5lENa2fdnTlWPj5T"
+      video2Src = "https://youtu.be/rTM8vXtdIUA?si=Dwz0l53cEBTqqCEX"
     } else {
       recommendation = `
                 <h3><i class="fas fa-heart"></i> Positive Healing Journey</h3>
                 <p>Your assessment shows you're on a good path. These uplifting VR experiences will boost your mood and accelerate your healing process.</p>
             `
-      video1Src =
-        "/placeholder.mp4?height=1080&width=1920&query=uplifting healing VR experience with positive imagery and nature"
-      video2Src =
-        "/placeholder.mp4?height=1080&width=1920&query=motivational recovery VR journey with inspiring landscapes"
+      video1Src = "https://youtu.be/eKumVFvGHFA?si=OdfvW47hP1hcEWKk"
+      video2Src = "https://youtu.be/rTM8vXtdIUA?si=Dwz0l53cEBTqqCEX"
     }
 
     container.innerHTML = recommendation
 
     this.vrVideos = [
-      { src: video1Src, duration: 300 }, // 5 minutes each
-      { src: video2Src, duration: 300 },
+      { src: this.convertYouTubeUrl(video1Src), duration: 600 }, // 10 minutes each
+      { src: this.convertYouTubeUrl(video2Src), duration: 600 },
     ]
 
-    document.getElementById("vrVideo1").src = video1Src
-    document.getElementById("vrVideo2").src = video2Src
+    document.getElementById("vrVideo1").src = this.convertYouTubeUrl(video1Src)
+    document.getElementById("vrVideo2").src = this.convertYouTubeUrl(video2Src)
+  }
+
+  convertYouTubeUrl(url) {
+    // Extract video ID from YouTube URL
+    const videoId = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/)?.[1]
+    if (videoId) {
+      return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0&controls=0&showinfo=0&rel=0&modestbranding=1`
+    }
+    return url
   }
 
   startVRSession() {
     const modal = document.getElementById("vrModal")
     modal.classList.add("active")
 
-    // Request fullscreen
-    if (modal.requestFullscreen) {
-      modal.requestFullscreen()
-    } else if (modal.webkitRequestFullscreen) {
-      modal.webkitRequestFullscreen()
-    } else if (modal.msRequestFullscreen) {
-      modal.msRequestFullscreen()
+    const requestFullscreen = () => {
+      if (modal.requestFullscreen) {
+        return modal.requestFullscreen()
+      } else if (modal.webkitRequestFullscreen) {
+        return modal.webkitRequestFullscreen()
+      } else if (modal.msRequestFullscreen) {
+        return modal.msRequestFullscreen()
+      }
+      return Promise.resolve()
     }
 
-    // Start session timer
+    requestFullscreen()
+      .then(() => {
+        console.log("[v0] Entered fullscreen mode")
+      })
+      .catch((e) => {
+        console.log("[v0] Fullscreen request failed:", e)
+      })
+
     this.sessionStartTime = Date.now()
     this.startSessionTimer()
 
-    // Start VR video sequence
-    this.currentVideoIndex = 0
-    this.playVRVideoSequence()
+    setTimeout(() => {
+      this.currentVideoIndex = 0
+      this.playVRVideoSequence()
+    }, 1000)
   }
 
   playVRVideoSequence() {
@@ -493,7 +508,6 @@ class RelivrApp {
     console.log("[v0] Starting VR video sequence")
 
     if (this.currentVideoIndex === 0) {
-      // Play first video
       currentVideoInfo.textContent = "Video 1 of 2"
       progressText.textContent = "Playing therapeutic experience 1..."
 
@@ -506,14 +520,27 @@ class RelivrApp {
           console.log("[v0] First video started playing")
           this.updateVRProgress(0, this.vrVideos[0].duration)
         })
-        .catch((e) => console.log("[v0] Video play error:", e))
+        .catch((e) => {
+          console.log("[v0] Video play error:", e)
+          setTimeout(() => {
+            this.currentVideoIndex = 1
+            this.playSecondVideo()
+          }, 3000)
+        })
 
-      // Set up event listener for when first video ends
       video1.onended = () => {
         console.log("[v0] First video ended, starting second video")
         this.currentVideoIndex = 1
         this.playSecondVideo()
       }
+
+      setTimeout(() => {
+        if (this.currentVideoIndex === 0) {
+          console.log("[v0] Auto-advancing to second video after timeout")
+          this.currentVideoIndex = 1
+          this.playSecondVideo()
+        }
+      }, this.vrVideos[0].duration * 1000)
     }
   }
 
@@ -535,15 +562,26 @@ class RelivrApp {
         console.log("[v0] Second video started playing")
         this.updateVRProgress(this.vrVideos[0].duration, this.vrVideos[1].duration)
       })
-      .catch((e) => console.log("[v0] Video play error:", e))
+      .catch((e) => {
+        console.log("[v0] Second video play error:", e)
+        setTimeout(() => {
+          this.completeVRSession()
+        }, 3000)
+      })
 
-    // Set up event listener for when second video ends
     video2.onended = () => {
       console.log("[v0] Second video ended, completing VR session")
       setTimeout(() => {
         this.completeVRSession()
-      }, 2000) // 2 second delay before auto-completing
+      }, 2000)
     }
+
+    setTimeout(() => {
+      if (this.currentVideoIndex === 1) {
+        console.log("[v0] Auto-completing VR session after timeout")
+        this.completeVRSession()
+      }
+    }, this.vrVideos[1].duration * 1000)
   }
 
   updateVRProgress(startTime, duration) {
@@ -570,7 +608,6 @@ class RelivrApp {
     const progressText = document.getElementById("vrProgressText")
     progressText.textContent = "VR therapy session completed!"
 
-    // Auto-exit VR after 3 seconds
     setTimeout(() => {
       this.exitVRSession()
       this.nextStep()
@@ -581,16 +618,13 @@ class RelivrApp {
     const modal = document.getElementById("vrModal")
     modal.classList.remove("active")
 
-    // Stop all videos
     document.getElementById("vrVideo1").pause()
     document.getElementById("vrVideo2").pause()
 
-    // Clear intervals
     if (this.vrProgressInterval) {
       clearInterval(this.vrProgressInterval)
     }
 
-    // Exit fullscreen
     if (document.exitFullscreen) {
       document.exitFullscreen()
     } else if (document.webkitExitFullscreen) {
@@ -617,7 +651,6 @@ class RelivrApp {
   generateResults() {
     const container = document.getElementById("resultsContainer")
 
-    // Calculate improvements
     const stressImprovement = this.calculateImprovement("stress_emoji")
     const painImprovement = this.calculateImprovement("pain_level")
     const anxietyImprovement = this.calculateImprovement("anxiety_emoji")
@@ -703,10 +736,8 @@ class RelivrApp {
     const postValue = Number.parseInt(this.postAssessmentData[postKey]) || 0
 
     if (metric.includes("pain") || metric.includes("anxiety") || metric.includes("stress")) {
-      // For negative metrics, improvement means reduction
       return Math.round(((preValue - postValue) / preValue) * 100)
     } else {
-      // For positive metrics, improvement means increase
       return Math.round(((postValue - preValue) / preValue) * 100)
     }
   }
@@ -715,12 +746,10 @@ class RelivrApp {
     const { jsPDF } = window.jspdf
     const doc = new jsPDF()
 
-    // Header
     doc.setFontSize(20)
     doc.setTextColor(79, 172, 254)
     doc.text("Relivr - VR Therapy Report", 20, 30)
 
-    // Patient Information
     doc.setFontSize(16)
     doc.setTextColor(0, 0, 0)
     doc.text("Patient Information", 20, 50)
@@ -729,11 +758,9 @@ class RelivrApp {
     doc.text(`Age: ${this.patientData.patientAge}`, 20, 75)
     doc.text(`Gender: ${this.patientData.patientGender}`, 20, 85)
     doc.text(`Operation Type: ${this.patientData.operationType}`, 20, 95)
-    doc.text(`Operation Date: ${this.patientData.operationDate}`, 20, 105)
-    doc.text(`Doctor: ${this.patientData.doctorName}`, 20, 115)
-    doc.text(`Blood Pressure: ${this.patientData.bloodPressure}`, 20, 125)
+    doc.text(`Doctor: ${this.patientData.doctorName}`, 20, 105)
+    doc.text(`Blood Pressure: ${this.patientData.bloodPressure}`, 20, 115)
 
-    // Session Information
     doc.setFontSize(16)
     doc.text("VR Therapy Session", 20, 145)
     doc.setFontSize(12)
@@ -741,7 +768,6 @@ class RelivrApp {
     doc.text(`Session Date: ${new Date().toLocaleDateString()}`, 20, 160)
     doc.text(`Session Duration: ${sessionDuration} minutes`, 20, 170)
 
-    // Pre-Assessment Results
     doc.setFontSize(16)
     doc.text("Pre-Assessment Results", 20, 190)
     doc.setFontSize(12)
@@ -757,7 +783,6 @@ class RelivrApp {
       yPos += 10
     })
 
-    // Post-Assessment Results
     if (yPos > 250) {
       doc.addPage()
       yPos = 20
@@ -778,7 +803,6 @@ class RelivrApp {
       yPos += 10
     })
 
-    // Improvements
     if (yPos > 230) {
       doc.addPage()
       yPos = 20
@@ -799,20 +823,16 @@ class RelivrApp {
     doc.text(`Anxiety Level Improvement: ${anxietyImprovement}%`, 20, yPos + 20)
     doc.text(`Overall Wellbeing Improvement: ${wellbeingImprovement}%`, 20, yPos + 30)
 
-    // Save the PDF
     const fileName = `relivr-report-${this.patientData.patientName}-${new Date().toISOString().split("T")[0]}.pdf`
     doc.save(fileName)
   }
 
   nextStep() {
-    // Hide current step
     document.querySelector(".step-section.active").classList.remove("active")
 
-    // Show next step
     this.currentStep++
     document.getElementById(`step${this.currentStep}`).classList.add("active")
 
-    // Update progress
     this.updateProgress()
   }
 
@@ -826,7 +846,6 @@ class RelivrApp {
   }
 }
 
-// Initialize the application when DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
   new RelivrApp()
 })
