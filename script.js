@@ -429,42 +429,33 @@ class RelivrApp {
                 <h3><i class="fas fa-leaf"></i> Calming Nature Experience</h3>
                 <p>Based on your high stress and anxiety levels, we recommend peaceful nature experiences to help you relax and find inner calm.</p>
             `
-      video1Src = "https://youtu.be/eKumVFvGHFA?si=OdfvW47hP1hcEWKk"
-      video2Src = "https://youtu.be/WsMjBMxpUTc?si=5lENa2fdnTlWPj5T"
+      video1Src = "videos/calming-nature-360.mp4"
+      video2Src = "videos/peaceful-meditation-360.mp4"
     } else if (painLevel >= 7) {
       recommendation = `
                 <h3><i class="fas fa-spa"></i> Pain Management Therapy</h3>
                 <p>We've selected specialized VR experiences designed to help manage pain through guided meditation and visualization techniques.</p>
             `
-      video1Src = "https://youtu.be/WsMjBMxpUTc?si=5lENa2fdnTlWPj5T"
-      video2Src = "https://youtu.be/rTM8vXtdIUA?si=Dwz0l53cEBTqqCEX"
+      video1Src = "videos/1.mp4"
+      video2Src = "videos/1.mp4"
     } else {
       recommendation = `
                 <h3><i class="fas fa-heart"></i> Positive Healing Journey</h3>
                 <p>Your assessment shows you're on a good path. These uplifting VR experiences will boost your mood and accelerate your healing process.</p>
             `
-      video1Src = "https://youtu.be/eKumVFvGHFA?si=OdfvW47hP1hcEWKk"
-      video2Src = "https://youtu.be/rTM8vXtdIUA?si=Dwz0l53cEBTqqCEX"
+      video1Src = "videos/1.mp4"
+      video2Src = "videos/1.mp4"
     }
 
     container.innerHTML = recommendation
 
     this.vrVideos = [
-      { src: this.convertYouTubeUrl(video1Src), duration: 600 }, // 10 minutes each
-      { src: this.convertYouTubeUrl(video2Src), duration: 600 },
+      { src: video1Src, duration: 600 }, // 10 minutes each
+      { src: video2Src, duration: 600 },
     ]
 
-    document.getElementById("vrVideo1").src = this.convertYouTubeUrl(video1Src)
-    document.getElementById("vrVideo2").src = this.convertYouTubeUrl(video2Src)
-  }
-
-  convertYouTubeUrl(url) {
-    // Extract video ID from YouTube URL
-    const videoId = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/)?.[1]
-    if (videoId) {
-      return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0&controls=0&showinfo=0&rel=0&modestbranding=1`
-    }
-    return url
+    document.getElementById("vrVideo1").src = video1Src
+    document.getElementById("vrVideo2").src = video2Src
   }
 
   startVRSession() {
@@ -514,6 +505,7 @@ class RelivrApp {
       video1.style.display = "block"
       video2.style.display = "none"
 
+      video1.load() // Ensure video is loaded
       video1
         .play()
         .then(() => {
@@ -556,6 +548,7 @@ class RelivrApp {
     video1.style.display = "none"
     video2.style.display = "block"
 
+    video2.load() // Ensure video is loaded
     video2
       .play()
       .then(() => {
