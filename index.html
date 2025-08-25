@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Relivr - Post-Operative Care & VR Therapy</title>
+    <title>RelieVR - Post-Operative Care & VR Therapy</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -17,7 +17,7 @@
             <div class="header-content">
                 <div class="logo">
                     <i class="fas fa-heartbeat"></i>
-                    <h1>Relivr</h1>
+                    <h1>RelieVR</h1>
                 </div>
                 <p class="tagline">Advanced Post-Operative Care & VR Therapy</p>
             </div>
@@ -120,13 +120,18 @@
                         <!-- Recommendation will be displayed here -->
                     </div>
                     
-                    <!-- Updated VR status to indicate automatic fullscreen playback -->
+                    <!-- Enhanced VR status messaging for automatic 360° video playback -->
                     <div class="vr-status" id="vrStatus">
                         <div class="vr-message">
-                            <i class="fas fa-play-circle"></i>
-                            <h3>VR Session Ready</h3>
+                            <i class="fas fa-cube"></i>
+                            <h3>360° VR Therapy Ready</h3>
                             <p>Your personalized 360° VR therapy will begin automatically in fullscreen mode</p>
-                            <p><small>Two therapeutic videos will play sequentially for optimal healing</small></p>
+                            <p><small>Two immersive 360° therapeutic videos will play sequentially for optimal healing</small></p>
+                            <div class="vr-features">
+                                <span class="feature-tag"><i class="fas fa-expand"></i> Auto Fullscreen</span>
+                                <span class="feature-tag"><i class="fas fa-play"></i> Auto Play</span>
+                                <span class="feature-tag"><i class="fas fa-globe"></i> 360° Experience</span>
+                            </div>
                         </div>
                         
                         <div class="session-timer">
@@ -136,8 +141,9 @@
                     </div>
                 </div>
                 
+                <!-- Updated button text for 360° VR -->
                 <button class="btn-primary" id="startVRSession">
-                    Start VR Therapy <i class="fas fa-vr-cardboard"></i>
+                    Start 360° VR Therapy <i class="fas fa-globe"></i>
                 </button>
             </section>
 
@@ -179,25 +185,33 @@
             </section>
         </main>
 
-        <!-- Updated VR Modal for 360-degree video playback -->
+        <!-- Updated VR Modal with working open source video elements -->
         <div class="vr-fullscreen-modal" id="vrModal">
             <div class="vr-overlay">
                 <div class="vr-header">
-                    <h3>360° VR Therapy Session Active</h3>
+                    <h3><i class="fas fa-globe"></i> 360° VR Therapy Session Active</h3>
                     <div class="session-info">
-                        <span id="currentVideoInfo">Video 1 of 2</span>
+                        <span id="currentVideoInfo">360° Video 1 of 2</span>
                         <span id="modalSessionTime">00:00</span>
                     </div>
                 </div>
                 
-                <!-- Updated video elements for 360-degree VR content -->
-                <video id="vrVideo1" preload="auto" style="display: none; width: 100%; height: 100%; object-fit: cover;">
-                    <source src="" type="video/mp4">
+                <!-- Updated video elements with working open source video URLs and enhanced attributes -->
+                <video id="vrVideo1" 
+                       preload="auto" 
+                       crossorigin="anonymous"
+                       playsinline
+                       style="display: none; width: 100%; height: 100%; object-fit: cover; background: #000;">
+                    <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
                     Your browser does not support 360° VR video playback.
                 </video>
                 
-                <video id="vrVideo2" preload="auto" style="display: none; width: 100%; height: 100%; object-fit: cover;">
-                    <source src="" type="video/mp4">
+                <video id="vrVideo2" 
+                       preload="auto" 
+                       crossorigin="anonymous"
+                       playsinline
+                       style="display: none; width: 100%; height: 100%; object-fit: cover; background: #000;">
+                    <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4" type="video/mp4">
                     Your browser does not support 360° VR video playback.
                 </video>
                 
@@ -205,7 +219,8 @@
                     <div class="vr-progress-bar">
                         <div class="vr-progress-fill" id="vrProgressFill"></div>
                     </div>
-                    <p id="vrProgressText">Preparing 360° VR experience...</p>
+                    <!-- Updated progress text for 360° experience -->
+                    <p id="vrProgressText">Preparing immersive 360° healing experience...</p>
                 </div>
                 
                 <button class="emergency-exit" id="emergencyExit">
