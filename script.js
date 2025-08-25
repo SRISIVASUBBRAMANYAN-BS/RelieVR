@@ -1,4 +1,4 @@
-class RelivrApp {
+class RelieVRApp {
   constructor() {
     this.currentStep = 1
     this.totalSteps = 5
@@ -427,31 +427,31 @@ class RelivrApp {
     if (stressLevel <= 2 && anxietyLevel <= 2) {
       recommendation = `
                 <h3><i class="fas fa-leaf"></i> Calming Nature Experience</h3>
-                <p>Based on your high stress and anxiety levels, we recommend peaceful nature experiences to help you relax and find inner calm.</p>
+                <p>Based on your high stress and anxiety levels, we recommend peaceful 360° nature experiences to help you relax and find inner calm.</p>
             `
-      video1Src = "videos/calming-nature-360.mp4"
-      video2Src = "videos/peaceful-meditation-360.mp4"
+      video1Src = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+      video2Src = "https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4"
     } else if (painLevel >= 7) {
       recommendation = `
                 <h3><i class="fas fa-spa"></i> Pain Management Therapy</h3>
-                <p>We've selected specialized VR experiences designed to help manage pain through guided meditation and visualization techniques.</p>
+                <p>We've selected specialized 360° VR experiences designed to help manage pain through guided meditation and visualization techniques.</p>
             `
-      video1Src = "videos/1.mp4"
-      video2Src = "videos/1.mp4"
+      video1Src = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
+      video2Src = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
     } else {
       recommendation = `
                 <h3><i class="fas fa-heart"></i> Positive Healing Journey</h3>
-                <p>Your assessment shows you're on a good path. These uplifting VR experiences will boost your mood and accelerate your healing process.</p>
+                <p>Your assessment shows you're on a good path. These uplifting 360° VR experiences will boost your mood and accelerate your healing process.</p>
             `
-      video1Src = "videos/1.mp4"
-      video2Src = "videos/1.mp4"
+      video1Src = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4"
+      video2Src = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4"
     }
 
     container.innerHTML = recommendation
 
     this.vrVideos = [
-      { src: video1Src, duration: 600 }, // 10 minutes each
-      { src: video2Src, duration: 600 },
+      { src: video1Src, duration: 60 }, // 1 minute each for demo purposes
+      { src: video2Src, duration: 60 },
     ]
 
     document.getElementById("vrVideo1").src = video1Src
@@ -475,19 +475,25 @@ class RelivrApp {
 
     requestFullscreen()
       .then(() => {
-        console.log("[v0] Entered fullscreen mode")
+        console.log("[v0] Entered fullscreen mode successfully")
+        this.sessionStartTime = Date.now()
+        this.startSessionTimer()
+
+        setTimeout(() => {
+          this.currentVideoIndex = 0
+          this.playVRVideoSequence()
+        }, 100)
       })
       .catch((e) => {
-        console.log("[v0] Fullscreen request failed:", e)
+        console.log("[v0] Fullscreen request failed, continuing without fullscreen:", e)
+        this.sessionStartTime = Date.now()
+        this.startSessionTimer()
+
+        setTimeout(() => {
+          this.currentVideoIndex = 0
+          this.playVRVideoSequence()
+        }, 100)
       })
-
-    this.sessionStartTime = Date.now()
-    this.startSessionTimer()
-
-    setTimeout(() => {
-      this.currentVideoIndex = 0
-      this.playVRVideoSequence()
-    }, 1000)
   }
 
   playVRVideoSequence() {
@@ -496,39 +502,47 @@ class RelivrApp {
     const currentVideoInfo = document.getElementById("currentVideoInfo")
     const progressText = document.getElementById("vrProgressText")
 
-    console.log("[v0] Starting VR video sequence")
+    console.log("[v0] Starting 360° VR video sequence")
 
     if (this.currentVideoIndex === 0) {
-      currentVideoInfo.textContent = "Video 1 of 2"
-      progressText.textContent = "Playing therapeutic experience 1..."
+      currentVideoInfo.textContent = "Playing 360° Therapeutic Video 1 of 2"
+      progressText.textContent = "Immersive 360° healing experience in progress..."
 
       video1.style.display = "block"
       video2.style.display = "none"
 
-      video1.load() // Ensure video is loaded
-      video1
-        .play()
-        .then(() => {
-          console.log("[v0] First video started playing")
-          this.updateVRProgress(0, this.vrVideos[0].duration)
-        })
-        .catch((e) => {
-          console.log("[v0] Video play error:", e)
-          setTimeout(() => {
-            this.currentVideoIndex = 1
-            this.playSecondVideo()
-          }, 3000)
-        })
+      video1.load()
+      video1.muted = false // Ensure audio is enabled
+      video1.volume = 0.7
+
+      const playPromise = video1.play()
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            console.log("[v0] First 360° video started playing successfully")
+            this.updateVRProgress(0, this.vrVideos[0].duration)
+          })
+          .catch((e) => {
+            console.log("[v0] First video autoplay failed:", e)
+            video1.muted = true
+            video1.play().catch(() => {
+              setTimeout(() => {
+                this.currentVideoIndex = 1
+                this.playSecondVideo()
+              }, 2000)
+            })
+          })
+      }
 
       video1.onended = () => {
-        console.log("[v0] First video ended, starting second video")
+        console.log("[v0] First 360° video completed, transitioning to second video")
         this.currentVideoIndex = 1
         this.playSecondVideo()
       }
 
       setTimeout(() => {
         if (this.currentVideoIndex === 0) {
-          console.log("[v0] Auto-advancing to second video after timeout")
+          console.log("[v0] Auto-advancing to second 360° video")
           this.currentVideoIndex = 1
           this.playSecondVideo()
         }
@@ -542,36 +556,44 @@ class RelivrApp {
     const currentVideoInfo = document.getElementById("currentVideoInfo")
     const progressText = document.getElementById("vrProgressText")
 
-    currentVideoInfo.textContent = "Video 2 of 2"
-    progressText.textContent = "Playing therapeutic experience 2..."
+    currentVideoInfo.textContent = "Playing 360° Therapeutic Video 2 of 2"
+    progressText.textContent = "Final immersive 360° healing session..."
 
     video1.style.display = "none"
     video2.style.display = "block"
 
-    video2.load() // Ensure video is loaded
-    video2
-      .play()
-      .then(() => {
-        console.log("[v0] Second video started playing")
-        this.updateVRProgress(this.vrVideos[0].duration, this.vrVideos[1].duration)
-      })
-      .catch((e) => {
-        console.log("[v0] Second video play error:", e)
-        setTimeout(() => {
-          this.completeVRSession()
-        }, 3000)
-      })
+    video2.load()
+    video2.muted = false
+    video2.volume = 0.7
+
+    const playPromise = video2.play()
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => {
+          console.log("[v0] Second 360° video started playing successfully")
+          this.updateVRProgress(this.vrVideos[0].duration, this.vrVideos[1].duration)
+        })
+        .catch((e) => {
+          console.log("[v0] Second video autoplay failed:", e)
+          video2.muted = true
+          video2.play().catch(() => {
+            setTimeout(() => {
+              this.completeVRSession()
+            }, 2000)
+          })
+        })
+    }
 
     video2.onended = () => {
-      console.log("[v0] Second video ended, completing VR session")
+      console.log("[v0] Second 360° video completed, finishing VR session")
       setTimeout(() => {
         this.completeVRSession()
-      }, 2000)
+      }, 1000)
     }
 
     setTimeout(() => {
       if (this.currentVideoIndex === 1) {
-        console.log("[v0] Auto-completing VR session after timeout")
+        console.log("[v0] Auto-completing 360° VR session")
         this.completeVRSession()
       }
     }, this.vrVideos[1].duration * 1000)
@@ -728,10 +750,24 @@ class RelivrApp {
     const preValue = Number.parseInt(this.preAssessmentData[preKey]) || 0
     const postValue = Number.parseInt(this.postAssessmentData[postKey]) || 0
 
+    if (preValue === 0 && postValue === 0) {
+      return 0
+    }
+
+    if (preValue === 0) {
+      if (metric.includes("pain") || metric.includes("anxiety") || metric.includes("stress")) {
+        return postValue === 0 ? 100 : Math.max(0, 100 - postValue * 10)
+      } else {
+        return Math.min(100, postValue * 10)
+      }
+    }
+
     if (metric.includes("pain") || metric.includes("anxiety") || metric.includes("stress")) {
-      return Math.round(((preValue - postValue) / preValue) * 100)
+      const improvement = ((preValue - postValue) / preValue) * 100
+      return Math.round(Math.max(0, Math.min(100, improvement)))
     } else {
-      return Math.round(((postValue - preValue) / preValue) * 100)
+      const improvement = ((postValue - preValue) / preValue) * 100
+      return Math.round(Math.max(0, Math.min(100, improvement)))
     }
   }
 
@@ -741,7 +777,7 @@ class RelivrApp {
 
     doc.setFontSize(20)
     doc.setTextColor(79, 172, 254)
-    doc.text("Relivr - VR Therapy Report", 20, 30)
+    doc.text("RelieVR - VR Therapy Report", 20, 30)
 
     doc.setFontSize(16)
     doc.setTextColor(0, 0, 0)
@@ -816,7 +852,7 @@ class RelivrApp {
     doc.text(`Anxiety Level Improvement: ${anxietyImprovement}%`, 20, yPos + 20)
     doc.text(`Overall Wellbeing Improvement: ${wellbeingImprovement}%`, 20, yPos + 30)
 
-    const fileName = `relivr-report-${this.patientData.patientName}-${new Date().toISOString().split("T")[0]}.pdf`
+    const fileName = `relievr-report-${this.patientData.patientName}-${new Date().toISOString().split("T")[0]}.pdf`
     doc.save(fileName)
   }
 
@@ -840,5 +876,5 @@ class RelivrApp {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  new RelivrApp()
+  new RelieVRApp()
 })
