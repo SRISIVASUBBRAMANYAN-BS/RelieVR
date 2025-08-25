@@ -120,12 +120,13 @@
                         <!-- Recommendation will be displayed here -->
                     </div>
                     
-                    <!-- Removed video container and controls, VR will auto-start in fullscreen -->
+                    <!-- Updated VR status to indicate automatic fullscreen playback -->
                     <div class="vr-status" id="vrStatus">
                         <div class="vr-message">
                             <i class="fas fa-play-circle"></i>
                             <h3>VR Session Ready</h3>
-                            <p>Your personalized VR therapy will begin automatically in fullscreen mode</p>
+                            <p>Your personalized 360° VR therapy will begin automatically in fullscreen mode</p>
+                            <p><small>Two therapeutic videos will play sequentially for optimal healing</small></p>
                         </div>
                         
                         <div class="session-timer">
@@ -178,30 +179,33 @@
             </section>
         </main>
 
-        <!-- Updated VR Modal for fullscreen auto-play -->
+        <!-- Updated VR Modal for 360-degree video playback -->
         <div class="vr-fullscreen-modal" id="vrModal">
             <div class="vr-overlay">
                 <div class="vr-header">
-                    <h3>VR Therapy Session Active</h3>
+                    <h3>360° VR Therapy Session Active</h3>
                     <div class="session-info">
                         <span id="currentVideoInfo">Video 1 of 2</span>
                         <span id="modalSessionTime">00:00</span>
                     </div>
                 </div>
                 
-                <video id="vrVideo1" preload="auto" style="display: none;">
+                <!-- Updated video elements for 360-degree VR content -->
+                <video id="vrVideo1" preload="auto" style="display: none; width: 100%; height: 100%; object-fit: cover;">
                     <source src="" type="video/mp4">
+                    Your browser does not support 360° VR video playback.
                 </video>
                 
-                <video id="vrVideo2" preload="auto" style="display: none;">
+                <video id="vrVideo2" preload="auto" style="display: none; width: 100%; height: 100%; object-fit: cover;">
                     <source src="" type="video/mp4">
+                    Your browser does not support 360° VR video playback.
                 </video>
                 
                 <div class="vr-progress">
                     <div class="vr-progress-bar">
                         <div class="vr-progress-fill" id="vrProgressFill"></div>
                     </div>
-                    <p id="vrProgressText">Preparing VR experience...</p>
+                    <p id="vrProgressText">Preparing 360° VR experience...</p>
                 </div>
                 
                 <button class="emergency-exit" id="emergencyExit">
